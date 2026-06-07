@@ -5,6 +5,7 @@ import com.mongia.razorpay.common.enums.PaymentEvent;
 import com.mongia.razorpay.common.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -28,11 +29,14 @@ public class PaymentTransitionLog {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus fromStatus;
+
     @Enumerated(EnumType.STRING)
     private PaymentStatus toStatus;
 
     @Enumerated(EnumType.STRING)
     private PaymentActor actor;
 
+
+    @CreationTimestamp
     private LocalDateTime occuredAt;
 }
