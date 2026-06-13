@@ -3,16 +3,20 @@ package com.mongia.razorpay.merchant.entity;
 import com.mongia.razorpay.common.enums.BusinessType;
 import com.mongia.razorpay.common.enums.MerchantStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="merchant")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Merchant {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

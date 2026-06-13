@@ -5,17 +5,16 @@ import lombok.Data;
 
 import java.util.UUID;
 
-@Data
 @Entity
-@Table(name="settlement_payment")
+@Table(name = "settlement_payment")
+@Data
 public class SettlementPayment {
 
     @EmbeddedId
     private SettlementPaymentId id;
 
-    @MapsId()
-    @ManyToOne(fetch = FetchType.LAZY,optional = false)
-    @JoinColumn(name = "settlement_id",nullable = false)
-    private Settlement settlementId;
-
+    @MapsId("settlementId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "settlement_id")
+    private Settlement settlement;
 }

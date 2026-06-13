@@ -2,12 +2,16 @@ package com.mongia.razorpay.merchant.entity;
 
 import com.mongia.razorpay.common.enums.ApiKeyEnvironment;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="api_key")
 public class ApiKey {
