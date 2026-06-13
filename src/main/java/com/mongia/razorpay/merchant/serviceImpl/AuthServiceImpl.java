@@ -2,6 +2,7 @@ package com.mongia.razorpay.merchant.serviceImpl;
 
 import com.mongia.razorpay.common.enums.AppUserRole;
 import com.mongia.razorpay.common.enums.MerchantStatus;
+import com.mongia.razorpay.common.exceptions.DuplicateResourceException;
 import com.mongia.razorpay.merchant.dto.request.MerchantSignupRequest;
 import com.mongia.razorpay.merchant.dto.response.MerchantResponse;
 import com.mongia.razorpay.merchant.entity.AppUser;
@@ -67,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
 
     private void checkMerchantEmailExists(String email){
         if(merchantRepository.existsByEmail(email)){
-            throw new RuntimeException("Merchant email already exists: "+ email);
+            throw new DuplicateResourceException("DUPLICATE_NERCHANT_EMAIL","Merchant email already exists: "+ email);
         }
     }
 }
