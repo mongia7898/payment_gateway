@@ -29,8 +29,11 @@ public class ApiKey {
     @Column(nullable = false, length = 200)
     private String keySecretHash;
 
+    @Column(length = 200)
+    private String previousKeySecretHash;
+
     @Column(nullable = false, length = 20)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private ApiKeyEnvironment environment;
 
     @Column(nullable = false)
