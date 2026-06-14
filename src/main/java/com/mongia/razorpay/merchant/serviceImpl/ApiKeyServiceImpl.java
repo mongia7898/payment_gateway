@@ -1,19 +1,25 @@
 package com.mongia.razorpay.merchant.serviceImpl;
 
 import com.mongia.razorpay.common.exceptions.ResourceNotFoundException;
+import com.mongia.razorpay.common.utils.RandomizerUtil;
 import com.mongia.razorpay.merchant.dto.request.CreateApiKeyRequest;
 import com.mongia.razorpay.merchant.dto.response.ApiKeyCreateResponse;
+import com.mongia.razorpay.merchant.dto.response.ApiKeyResponse;
 import com.mongia.razorpay.merchant.entity.ApiKey;
 import com.mongia.razorpay.merchant.entity.Merchant;
 import com.mongia.razorpay.merchant.repository.ApiKeyRepository;
 import com.mongia.razorpay.merchant.repository.MerchantRepository;
 import com.mongia.razorpay.merchant.services.ApiKeyService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
 
+
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +35,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
 
 
-        String keyId= "rzp_"+request.environment().name().toUpperCase()+"big_random_string";
-        String rawSecret= "big_random_secret"; // TODO: replace with cryptography
+        String keyId= "rzp_"+request.environment().name().toLowerCase() + "_"+RandomizerUtil.randomBase64(24);
+        String rawSecret= RandomizerUtil.randomBase64(40);
 
         ApiKey apiKey=ApiKey.builder()
                 .merchant(merchant)
@@ -42,6 +48,29 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apiKey = apiKeyRepository.save(apiKey);
         return new ApiKeyCreateResponse(apiKey.getId(),keyId,rawSecret,apiKey.getEnvironment());
     }
+
+    @Override
+    public List<ApiKeyResponse> getApiKeyByMerchant(UUID merchantId) {
+        List<ApiKey> apiKeyList = apiKeyRepository.findByMerchant_Id(merchantId);
+        return apiKeyList.stream().map(apiKey -> new ApiKeyResponse(
+                apiKey.getId(),
+                apiKey.getKeyId(),
+                apiKey.getEnvironment(),
+                apiKey.getEnabled(),
+                apiKey.getLastUsedAt())).collect(Collectors.toList());
+
+    }
+
+    @Override
+    @Transactional
+    public void revoke(UUID merchantId, UUID keyId) {
+        ApiKey apiKey=apiKeyRepository.findById(keyId)
+                .filter(k-> k.getMerchant().getId().equals(merchantId))
+                .orElseThrow(()-> new ResourceNotFoundException("ApiKey",keyId));
+
+        apiKey.setEnabled(false);
+    }
+
 }
 
 
