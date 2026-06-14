@@ -8,8 +8,9 @@ public class ResourceNotFoundException extends RuntimeException{
     private final String resourceName;
     private final Object identifier;
 
+
     public ResourceNotFoundException(String resourceName,Object identifier) {
-        super(resourceName + " not found");
+        super(resourceName + " not found in " + identifier);
         this.resourceName=resourceName;
         this.identifier=identifier;
     }

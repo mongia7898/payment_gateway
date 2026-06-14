@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateResourceException(ResourceNotFoundException ex){
-        ErrorResponse errorResponse=ErrorResponse.of(ex.getResourceName(), ex.getMessage());
+        String errorCode=ex.getResourceName().toUpperCase()+"_NOT_FOUND";
+        ErrorResponse errorResponse=ErrorResponse.of(errorCode, ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
