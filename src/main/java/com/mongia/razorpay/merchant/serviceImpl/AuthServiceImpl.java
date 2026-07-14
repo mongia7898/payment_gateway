@@ -7,6 +7,7 @@ import com.mongia.razorpay.merchant.dto.request.MerchantSignupRequest;
 import com.mongia.razorpay.merchant.dto.response.MerchantResponse;
 import com.mongia.razorpay.merchant.entity.AppUser;
 import com.mongia.razorpay.merchant.entity.Merchant;
+import com.mongia.razorpay.merchant.mapper.MerchantMapper;
 import com.mongia.razorpay.merchant.repository.AppUserRepository;
 import com.mongia.razorpay.merchant.repository.MerchantRepository;
 import com.mongia.razorpay.merchant.services.AuthService;
@@ -23,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AppUserRepository appUserRepository;
     private final MerchantRepository merchantRepository;
-
+    private final MerchantMapper merchantMapper;
     @Override
     @Transactional
     public @Nullable MerchantResponse signup(MerchantSignupRequest request) {
@@ -37,9 +38,7 @@ public class AuthServiceImpl implements AuthService {
         AppUser appUser = createAppUser(request, merchant);
 
         ///  Return response
-        return new MerchantResponse(merchant.getId(),merchant.getName(),
-                merchant.getEmail(), merchant.getBusinessName(),
-                merchant.getBusinessType(),merchant.getStatus());
+        return merchantMapper.entityToResponse(merchant);
 
     }
 
@@ -56,13 +55,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Merchant createMerchant(MerchantSignupRequest request) {
-        Merchant merchant=Merchant.builder()
-                        .businessName(request.businessName())
-                        .businessType(request.businessType())
-                        .name(request.name())
-                        .email(request.email())
-                        .status(MerchantStatus.PENDING_KYC)
-                        .build();
+        Merchant merchant=merchantMapper.signupRequestToEntity(request);
+        merchant.setStatus(MerchantStatus.PENDING_KYC);
         return merchantRepository.save(merchant);
     }
 

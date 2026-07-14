@@ -9,6 +9,8 @@ import com.mongia.razorpay.payment.dto.response.OrderResponse;
 import com.mongia.razorpay.payment.dto.response.PaymentResponse;
 import com.mongia.razorpay.payment.entity.OrderRecord;
 import com.mongia.razorpay.payment.entity.Payment;
+import com.mongia.razorpay.payment.mapper.OrderMapper;
+import com.mongia.razorpay.payment.mapper.PaymentMapper;
 import com.mongia.razorpay.payment.repository.OrderRepository;
 import com.mongia.razorpay.payment.repository.PaymentRepository;
 import com.mongia.razorpay.payment.service.Orderservice;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -25,6 +28,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class OrderServiceImpl implements Orderservice {
 
     private final PaymentRepository paymentRepository;
@@ -33,7 +37,10 @@ public class OrderServiceImpl implements Orderservice {
     @Value("${payment.order.default-order-expiry-minutes:30}")
     private int defaultOrderExpiryMinutes;
 
+    private final PaymentMapper paymentMapper;
+    private final OrderMapper orderMapper;
     @Override
+    @Transactional
     public OrderResponse create(UUID merchantId, CreateOrderRequest request) {
         // check if the reciept already exists
         if(StringUtils.hasText(request.receipt()) && orderRepository.existsByMerchantIdAndReceipt(merchantId,request.receipt())){
@@ -53,15 +60,7 @@ public class OrderServiceImpl implements Orderservice {
 
 
         // TODO: publish to kafka event
-        return new OrderResponse(orderRecord.getId(),
-                orderRecord.getMerchantId(),
-                orderRecord.getAmount(),
-                orderRecord.getReceipt(),
-                orderRecord.getOrderStatus(),
-                orderRecord.getAttempts(),
-                orderRecord.getNotes(),
-                orderRecord.getExpiresAt(),
-                null);
+        return orderMapper.entityToResponse(orderRecord);
     }
 
     @Override
@@ -70,11 +69,12 @@ public class OrderServiceImpl implements Orderservice {
                 .orElseThrow(()->
                     new ResourceNotFoundException("Order not found", orderId)
                 );
-        return new OrderResponse(orderRecord.getId(),orderRecord.getMerchantId(),orderRecord.getAmount(),orderRecord.getReceipt(),orderRecord.getOrderStatus(), orderRecord.getAttempts(), orderRecord.getNotes(),orderRecord.getExpiresAt(),null);
+        return orderMapper.entityToResponse(orderRecord);
 
     }
 
     @Override
+    @Transactional
     public OrderResponse cancelOrder(UUID merchantId, UUID orderId) {
         OrderRecord orderRecord= orderRepository.findByIdAndMerchantId(orderId,merchantId)
                 .orElseThrow(()->
@@ -89,19 +89,19 @@ public class OrderServiceImpl implements Orderservice {
         orderRecord.setOrderStatus(OrderStatus.CANCELLED);
         orderRecord=orderRepository.save(orderRecord);
 
-        return new OrderResponse(orderRecord.getId(),orderRecord.getMerchantId(),orderRecord.getAmount(),orderRecord.getReceipt(),orderRecord.getOrderStatus(), orderRecord.getAttempts(), orderRecord.getNotes(),orderRecord.getExpiresAt(),null);
+        return orderMapper.entityToResponse(orderRecord);
     }
 
     @Override
-    public List<PaymentResponse> listPayments(UUID merchantId, UUID orderId) {
-        orderRepository.findByIdAndMerchantId(orderId,merchantId)
-                .orElseThrow(()-> {
+    public List<PaymentResponse> listPaymentsForOrder(UUID merchantId, UUID orderId) {
+        OrderRecord orderRecord = orderRepository.findByIdAndMerchantId(orderId, merchantId)
+                .orElseThrow(() -> {
                     throw new ResourceNotFoundException("Order not found", orderId);
                 });
 
         List<Payment> paymentList=paymentRepository.findByOrder_Id(orderId);
 
-        paymentList.stream().map( payment-> payment).toList();
-        return List.of();
+        List<PaymentResponse> paymentResponseList = paymentList.stream().map(paymentMapper::entityToResponse).toList();
+        return paymentResponseList;
     }
 }

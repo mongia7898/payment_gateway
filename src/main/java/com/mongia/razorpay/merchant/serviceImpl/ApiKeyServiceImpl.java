@@ -7,6 +7,7 @@ import com.mongia.razorpay.merchant.dto.response.ApiKeyCreateResponse;
 import com.mongia.razorpay.merchant.dto.response.ApiKeyResponse;
 import com.mongia.razorpay.merchant.entity.ApiKey;
 import com.mongia.razorpay.merchant.entity.Merchant;
+import com.mongia.razorpay.merchant.mapper.ApiKeyMapper;
 import com.mongia.razorpay.merchant.repository.ApiKeyRepository;
 import com.mongia.razorpay.merchant.repository.MerchantRepository;
 import com.mongia.razorpay.merchant.services.ApiKeyService;
@@ -30,6 +31,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
     private final MerchantRepository merchantRepository;
+    private final ApiKeyMapper apiKeyMapper;
 
     @Override
     @Transactional
@@ -57,12 +59,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     @Transactional
     public List<ApiKeyResponse> getApiKeyByMerchant(UUID merchantId) {
         List<ApiKey> apiKeyList = apiKeyRepository.findByMerchant_Id(merchantId);
-        return apiKeyList.stream().map(apiKey -> new ApiKeyResponse(
-                apiKey.getId(),
-                apiKey.getKeyId(),
-                apiKey.getEnvironment(),
-                apiKey.getEnabled(),
-                apiKey.getLastUsedAt())).collect(Collectors.toList());
+        return apiKeyMapper.entityListToResponseList(apiKeyList);
 
     }
 

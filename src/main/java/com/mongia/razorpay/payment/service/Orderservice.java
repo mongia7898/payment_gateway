@@ -14,6 +14,6 @@ public interface Orderservice {
 
     OrderResponse cancelOrder(UUID merchantId, UUID orderId);
 
-    List<PaymentResponse> listPayments(UUID merchantId, UUID orderId);
+    List<PaymentResponse> listPaymentsForOrder(UUID merchantId, UUID orderId);
 
 }
