@@ -1,5 +1,6 @@
 package com.mongia.razorpay.merchant.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import com.mongia.razorpay.common.enums.ApiKeyEnvironment;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,8 +14,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="api_key")
-public class ApiKey {
+@Table(name="api_key",indexes={
+        @Index(name="idx_api_key_merchant_id",columnList = "merchant_id"),
+        @Index(name="idx_api_key_merchant_env",columnList = "merchant_id,environment,enabled")
+})
+public class ApiKey extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

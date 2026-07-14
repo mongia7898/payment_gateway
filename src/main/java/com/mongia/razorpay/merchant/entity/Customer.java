@@ -1,5 +1,6 @@
 package com.mongia.razorpay.merchant.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,13 +8,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name="customer")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+@Table(name="customer",indexes = {
+        @Index(name = "idx_customer_merchant_id",columnList = "merchant_id"),
+        @Index(name = "idx_customer_email",columnList = "email")
+})
+public class Customer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

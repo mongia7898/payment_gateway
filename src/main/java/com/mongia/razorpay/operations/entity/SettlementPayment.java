@@ -1,5 +1,6 @@
 package com.mongia.razorpay.operations.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "settlement_payment")
 @Data
-public class SettlementPayment {
+public class SettlementPayment extends BaseEntity {
 
     @EmbeddedId
     private SettlementPaymentId id;

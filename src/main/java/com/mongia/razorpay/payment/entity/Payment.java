@@ -1,5 +1,6 @@
 package com.mongia.razorpay.payment.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import com.mongia.razorpay.common.enums.PaymentMethod;
 import com.mongia.razorpay.common.enums.PaymentStatus;
 import com.mongia.razorpay.merchant.entity.Merchant;
@@ -14,16 +15,19 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name="payment")
 @Data
-public class Payment {
+@Table(name="payment",indexes = {
+        @Index(name="idx_payment_order_id",columnList = "order_id"),
+        @Index(name="idx_payment_merchant_id",columnList = "merchant_id")
+})
+public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
-    private UUID merchant;
+    private UUID merchantId;
 
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "order_id",nullable = false)
@@ -57,6 +61,4 @@ public class Payment {
     private LocalDateTime refundedAt;
     private LocalDateTime settledAt;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }

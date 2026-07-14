@@ -1,5 +1,6 @@
 package com.mongia.razorpay.merchant.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import com.mongia.razorpay.common.enums.BusinessType;
 import com.mongia.razorpay.common.enums.MerchantStatus;
 import jakarta.persistence.*;
@@ -13,11 +14,13 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name="merchant")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Merchant {
+@Table(name="merchant",indexes = {
+        @Index(name="idx_merchant_status",columnList = "status")
+})
+public class Merchant extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -57,15 +60,5 @@ public class Merchant {
     private String settlementBankIfsc;
     @Column(length = 50)
     private String settlementAccountHolderName;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-
-
-
 
 }

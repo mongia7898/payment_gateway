@@ -1,5 +1,6 @@
 package com.mongia.razorpay.operations.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Data
 @Table(name = "dlq_event")
 @Entity
-public class DlqEvent {
+public class DlqEvent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

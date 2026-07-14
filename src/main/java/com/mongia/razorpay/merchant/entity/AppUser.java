@@ -1,5 +1,6 @@
 package com.mongia.razorpay.merchant.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import com.mongia.razorpay.common.enums.AppUserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,13 +11,15 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name="app_user")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AppUser {
+@Table(name="app_user",indexes={
+        @Index(name="idx_app_user_merchant_id",columnList = "merchant_id")
+})
+public class AppUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,9 +43,4 @@ public class AppUser {
     private AppUserRole role;
 
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

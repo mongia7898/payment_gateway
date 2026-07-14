@@ -1,5 +1,6 @@
 package com.mongia.razorpay.operations.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import com.mongia.razorpay.common.entity.Money;
 import com.mongia.razorpay.common.enums.SettlementStatus;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Table(name = "settlement")
 @Entity
 @Data
-public class Settlement {
+public class Settlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

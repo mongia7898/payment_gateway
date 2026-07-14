@@ -1,5 +1,6 @@
 package com.mongia.razorpay.payment.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import com.mongia.razorpay.common.entity.Money;
 import com.mongia.razorpay.common.enums.OrderStatus;
 import jakarta.persistence.*;
@@ -17,8 +18,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="order_record")
-public class OrderRecord {
+@Table(name="order_record",indexes = {
+        @Index(name="idx_order_id_merchant_id",columnList = "id,merchant_id"),
+        @Index(name="idx_order_record_receipt",columnList = "receipt"),
+        @Index(name="idx_order_merchant_id",columnList = "merchant_id"),
+
+})
+public class OrderRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

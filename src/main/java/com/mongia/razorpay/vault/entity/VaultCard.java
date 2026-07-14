@@ -1,5 +1,6 @@
 package com.mongia.razorpay.vault.entity;
 
+import com.mongia.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "vault_card")
-public class VaultCard {
+public class VaultCard extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
