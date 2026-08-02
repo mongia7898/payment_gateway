@@ -1,11 +1,15 @@
 package com.mongia.razorpay.payment.entity;
 
 import com.mongia.razorpay.common.entity.BaseEntity;
+import com.mongia.razorpay.common.entity.Money;
 import com.mongia.razorpay.common.enums.PaymentMethod;
 import com.mongia.razorpay.common.enums.PaymentStatus;
 import com.mongia.razorpay.merchant.entity.Merchant;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -20,6 +24,9 @@ import java.util.UUID;
         @Index(name="idx_payment_order_id",columnList = "order_id"),
         @Index(name="idx_payment_merchant_id",columnList = "merchant_id")
 })
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Payment extends BaseEntity {
 
     @Id
@@ -32,6 +39,9 @@ public class Payment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "order_id",nullable = false)
     private OrderRecord order;
+
+    @Embedded
+    private Money amount;
 
     @Column(nullable = false)
     private String idempotencyKey;

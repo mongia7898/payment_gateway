@@ -6,7 +6,7 @@ public class BusinessRuleException extends RuntimeException {
         super(message);
     }
 
-    public BusinessRuleException(String message, String errorCode) {
+    public BusinessRuleException(String errorCode,String message ) {
         super(message);
         this.errorCode = errorCode;
     }
