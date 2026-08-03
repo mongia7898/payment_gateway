@@ -1,0 +1,23 @@
+package com.mongia.razorpay.payment.processor;
+
+import com.mongia.razorpay.common.enums.PaymentMethod;
+import com.mongia.razorpay.payment.processor.dto.PaymentProcessorRequest;
+import com.mongia.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Component
+@RequiredArgsConstructor
+public class PaymentProcessorRouter {
+
+    private final Map<PaymentMethod,PaymentProcessor> paymentProcessorMap;
+    public PaymentProcessorResponse charge(PaymentProcessorRequest request){
+        PaymentProcessor paymentProcessor = paymentProcessorMap.get(request.method());
+
+        if(paymentProcessor==null)
+            throw new IllegalArgumentException("No payment processor registered for this method: "+request.method());
+        return  paymentProcessor.charge(request);
+    }
+}
