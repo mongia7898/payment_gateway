@@ -10,6 +10,8 @@ import com.mongia.razorpay.payment.entity.OrderRecord;
 import com.mongia.razorpay.payment.entity.Payment;
 import com.mongia.razorpay.payment.gateway.PaymentGatewayRouter;
 import com.mongia.razorpay.payment.gateway.dto.PaymentRequest;
+import com.mongia.razorpay.payment.gateway.dto.PaymentResult;
+import com.mongia.razorpay.payment.mapper.PaymentMapper;
 import com.mongia.razorpay.payment.repository.OrderRepository;
 import com.mongia.razorpay.payment.repository.PaymentRepository;
 import com.mongia.razorpay.payment.service.PaymentService;
@@ -28,6 +30,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
 
     private final PaymentGatewayRouter paymentGatewayRouter;
+
+    private final PaymentMapper paymentMapper;
     @Override
     @Transactional
     public PaymentResponse initiate(UUID merchantId, PaymentInitRequestDto request) {
@@ -54,7 +58,21 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentRequest paymentRequest=new PaymentRequest(payment.getId(),request.orderId(),merchantId,order.getAmount(),request.paymentMethod(),request.methodDetails());
 
-        paymentGatewayRouter.initiate(paymentRequest);
-        return null;
+        PaymentResult result= paymentGatewayRouter.initiate(paymentRequest);
+
+
+        switch (result){
+            case PaymentResult.Pending pending -> payment.setProcessorReference((pending.registrationReference()));
+            case PaymentResult.Failure failure ->{
+                payment.setStatus(PaymentStatus.FAILED);
+                payment.setErrorCode(failure.errorCode());
+                payment.setErrorDescription(failure.errorDescription());
+            }
+
+        }
+
+        payment=paymentRepository.save(payment);
+        order=orderRepository.save(order);
+        return paymentMapper.entityToResponse(payment);
     }
 }
